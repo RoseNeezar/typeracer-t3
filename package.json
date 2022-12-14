@@ -5,22 +5,33 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && prisma db push",
     "lint": "next lint",
     "start": "next start"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.4",
+    "@heroicons/react": "^2.0.13",
+    "@hookform/resolvers": "^2.9.10",
     "@prisma/client": "^4.5.0",
     "@tanstack/react-query": "^4.16.0",
+    "@tanstack/react-query-devtools": "^4.14.3",
     "@trpc/client": "^10.0.0",
     "@trpc/next": "^10.0.0",
     "@trpc/react-query": "^10.0.0",
     "@trpc/server": "^10.0.0",
+    "axios": "^1.2.1",
+    "daisyui": "^2.38.0",
+    "framer-motion": "6.5.1",
     "next": "13.0.2",
+    "pusher": "^5.1.2",
+    "pusher-js": "^7.5.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.40.0",
     "superjson": "1.9.1",
-    "zod": "^3.18.0"
+    "zod": "^3.18.0",
+    "zustand": "^4.1.5"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
