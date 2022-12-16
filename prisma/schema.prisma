@@ -6,28 +6,24 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-model Player {
-  id                 String   @id @default(cuid())
-  current_word_index Int      @default(0)
+type Player {
+  current_word_index Int     @default(0)
   is_party_leader    Boolean
   nickname           String
-  WPM                Int      @default(-1)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  game               Game[]
+  WPM                Int     @default(-1)
 }
 
 model Game {
-  id         String   @id @default(cuid())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   words      String[]
   is_open    Boolean  @default(true)
-  isOver     Boolean  @default(false)
+  is_over    Boolean  @default(false)
   start_time Int
   players    Player[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }

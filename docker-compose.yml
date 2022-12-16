@@ -1,12 +1,12 @@
-version: '3.9'
+version: "3.9"
 services:
   soketi:
-    container_name: 'soketi_server'
+    container_name: "soketi_server"
     restart: unless-stopped
-    image: 'quay.io/soketi/soketi:0.17-16-alpine'
+    image: "quay.io/soketi/soketi:0.17-16-alpine"
     ports:
-      - '6001:6001'
-      - '9601:9601'
+      - "6001:6001"
+      - "9601:9601"
     environment:
       DEBUG: 1
       DEFAULT_APP_ID: default
@@ -14,6 +14,17 @@ services:
       DEFAULT_APP_SECRET: app-secret
     networks:
       - soketi_network
+  mongodb1:
+    image: prismagraphql/mongo-single-replica:4.4.3-bionic
+    hostname: localhost
+    container_name: mongodb1
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: typeracer
+      INIT_WAIT_SEC: 3
+    ports:
+      - "27017:27017"
 
 networks:
   soketi_network:
