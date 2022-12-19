@@ -15,6 +15,7 @@ interface PusherZustandStore {
   pusherClient: Pusher;
   channel: Channel;
   presenceChannel: PresenceChannel;
+  privateChannel: Channel;
   members: Map<string, any>;
 }
 let store: StoreApi<PusherZustandStore>;
@@ -24,7 +25,6 @@ const createPusherStore = (
   gameId: string
 ) => {
   if (store) {
-    console.log("fuck you react I win");
     return store;
   }
 
@@ -41,8 +41,9 @@ const createPusherStore = (
       headers: { user_id: player, nickname },
     },
   });
-
+  console.log("---", player);
   const channel = pusherClient.subscribe(`game-${gameId}`);
+  const privateChannel = pusherClient.subscribe(`current-user-${player}`);
 
   const presenceChannel = pusherClient.subscribe(
     `presence-${gameId}`
@@ -55,7 +56,7 @@ const createPusherStore = (
       pusherClient: pusherClient,
       channel: channel,
       presenceChannel,
-
+      privateChannel,
       members: new Map(),
     };
   });
@@ -113,9 +114,11 @@ export const PusherProvider: React.FC<
  */
 export function useSubscribeToEvent<MessageType>(
   eventName: string,
-  callback: (data: MessageType) => void
+  callback: (data: MessageType) => void,
+  isPrivate?: boolean
 ) {
   const channel = usePusherStore((state) => state.channel);
+  const privateChannel = usePusherStore((state) => state.privateChannel);
 
   const stableCallback = React.useRef(callback);
 
@@ -128,9 +131,16 @@ export function useSubscribeToEvent<MessageType>(
     const reference = (data: MessageType) => {
       stableCallback.current(data);
     };
-    channel.bind(eventName, reference);
+
+    if (isPrivate) {
+      privateChannel.bind(eventName, reference);
+    } else {
+      channel.bind(eventName, reference);
+    }
+
     return () => {
       channel.unbind(eventName, reference);
+      privateChannel.unbind(eventName, reference);
     };
   }, [channel, eventName]);
 }
