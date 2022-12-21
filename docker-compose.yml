@@ -9,9 +9,10 @@ services:
       - "9601:9601"
     environment:
       DEBUG: 1
-      DEFAULT_APP_ID: default
-      DEFAULT_APP_KEY: app-key
-      DEFAULT_APP_SECRET: app-secret
+      SOKETI_DEFAULT_APP_ID: default
+      SOKETI_DEFAULT_APP_KEY: app-key
+      SOKETI_DEFAULT_APP_SECRET: app-secret
+      SOKETI_DEFAULT_APP_USER_AUTHENTICATION: true
     networks:
       - soketi_network
   mongodb1:
