@@ -3,18 +3,19 @@ services:
   soketi:
     container_name: "soketi_server"
     restart: unless-stopped
-    image: "quay.io/soketi/soketi:0.17-16-alpine"
+    image: "quay.io/soketi/soketi:latest-16-alpine"
     ports:
       - "6001:6001"
       - "9601:9601"
     environment:
-      DEBUG: 1
       SOKETI_DEFAULT_APP_ID: default
       SOKETI_DEFAULT_APP_KEY: app-key
       SOKETI_DEFAULT_APP_SECRET: app-secret
+      SOKETI_DEFAULT_APP_ENABLE_CLIENT_MESSAGES: true
+      SOKETI_DEFAULT_APP_MAX_CLIENT_EVENTS_PER_SEC: 10
       SOKETI_DEFAULT_APP_USER_AUTHENTICATION: true
-    networks:
-      - soketi_network
+    # networks:
+    #   - soketi_network
   mongodb1:
     image: prismagraphql/mongo-single-replica:4.4.3-bionic
     hostname: localhost
@@ -26,7 +27,6 @@ services:
       INIT_WAIT_SEC: 3
     ports:
       - "27017:27017"
-
-networks:
-  soketi_network:
-    driver: bridge
+# networks:
+#   soketi_network:
+#     driver: bridge
