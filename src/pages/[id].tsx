@@ -11,6 +11,7 @@ import GameStartBtn from "../components/GameStartBtn";
 import { Modal } from "../components/Modal";
 import {
   GameState,
+  KeyInput,
   useCurrentPlayer,
   useGame,
   useGameStore,
@@ -46,12 +47,34 @@ const GameView: React.FC<{
   );
   useSubscribeToEvent(
     "client-up-key",
-    (data) => console.log("up-key-===", data),
+    (data: KeyInput) => {
+      let removeIndex = useGameStore
+        .getState()
+        .KeyEvents.findIndex((t) => t.nickname === data.nickname);
+
+      if (removeIndex > -1) {
+        let tmp = useGameStore.getState().KeyEvents;
+
+        tmp.splice(removeIndex, 1);
+
+        useGameStore.setState({
+          KeyEvents: useGameStore
+            .getState()
+            .KeyEvents.filter(
+              (x) => x.nickname !== data.nickname && x.key !== data.key
+            ),
+        });
+      }
+    },
     "presence"
   );
   useSubscribeToEvent(
     "client-down-key",
-    (data) => console.log("down-key-===", data),
+    (data: KeyInput) => {
+      useGameStore.setState({
+        KeyEvents: [...useGameStore.getState().KeyEvents, data],
+      });
+    },
     "presence"
   );
 
