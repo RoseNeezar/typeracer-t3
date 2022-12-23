@@ -9,10 +9,11 @@ const copyUrlToClipboard = (path: string) => () => {
 const GameIDContainer: FC<{ id: string }> = ({ id }) => {
   return (
     <div
-      onClick={copyUrlToClipboard(`/game/${id}`)}
-      className="flex items-center justify-center p-3 bg-gray-600 border-2 border-gray-800 rounded-lg cursor-pointer w-fit">
+      onClick={copyUrlToClipboard(`/${id}`)}
+      className="flex w-fit cursor-pointer items-center justify-center rounded-lg border-2 border-gray-800 bg-gray-600 p-3"
+    >
       <div className="mr-3">Game ID: </div>
-      <button className="p-3 bg-gray-700 rounded-lg">{id}</button>
+      <button className="rounded-lg bg-gray-700 p-3">{id}</button>
     </div>
   );
 };

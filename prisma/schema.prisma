@@ -10,11 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type Player {
+model Player {
+  id                 String  @id @default(auto()) @map("_id") @db.ObjectId
   current_word_index Int     @default(0)
   is_party_leader    Boolean
-  nickname           String
+  nickname           String  @unique
   WPM                Int     @default(-1)
+  game_id            String  @db.ObjectId
+  game               Game    @relation(fields: [game_id], references: [id])
 }
 
 model Game {

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-// import { useKeyInput } from "../../../hooks/useApiHooks";
-// import { socket } from "../../../util/promiseSocket";
+import { usePresence } from "../utils/pusher";
 
 type Props = {
   isOpen: boolean;
@@ -12,8 +11,7 @@ type Props = {
 const GameInput = (props: Props) => {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  // const { KeyInput: onKey } = useKeyInput("key-pressed");
-  // const { KeyInput: offKey } = useKeyInput("remove-key-pressed");
+  const pusher = usePresence();
 
   const handleInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -35,22 +33,22 @@ const GameInput = (props: Props) => {
     if (e.code.substring(0, 3) !== "Key") return;
     const key = e.code.charAt(e.code.length - 1).toLocaleLowerCase();
 
-    // await onKey({
-    //   gameID: props.gameID,
-    //   key,
-    //   nickname: props.nickname,
-    // });
+    pusher.trigger("client-down-key", {
+      gameID: props.gameID,
+      key,
+      nickname: props.nickname,
+    });
   };
 
   const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code.substring(0, 3) !== "Key") return;
     const key = e.code.charAt(e.code.length - 1).toLocaleLowerCase();
 
-    // await offKey({
-    //   gameID: props.gameID,
-    //   key,
-    //   nickname: props.nickname,
-    // });
+    pusher.trigger("client-up-key", {
+      gameID: props.gameID,
+      key,
+      nickname: props.nickname,
+    });
   };
 
   useEffect(() => {
