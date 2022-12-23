@@ -15,13 +15,13 @@ interface PusherZustandStore {
   pusherClient: Pusher;
   channel: Channel;
   presenceChannel: PresenceChannel;
-  privateChannel: Channel;
+  userChannel: UserFacade;
   members: Map<string, any>;
 }
 let store: StoreApi<PusherZustandStore>;
 const createPusherStore = (
   nickname: string,
-  player: string,
+  playerId: string,
   gameId: string
 ) => {
   if (store) {
@@ -38,25 +38,31 @@ const createPusherStore = (
     disableStats: true,
     authEndpoint: "/api/pusher/auth-channel",
     auth: {
-      headers: { user_id: player, nickname },
+      headers: { user_id: playerId, nickname },
+    },
+    userAuthentication: {
+      endpoint: "/api/pusher/auth-user",
+      transport: "ajax",
+      headers: { user_id: playerId, nickname },
     },
   });
-  console.log("---", player);
+
+  pusherClient.signin();
+
   const channel = pusherClient.subscribe(`game-${gameId}`);
-  const privateChannel = pusherClient.subscribe(`current-user-${player}`);
+
+  const userChannel = pusherClient.user;
 
   const presenceChannel = pusherClient.subscribe(
     `presence-${gameId}`
   ) as PresenceChannel;
 
-  (window as any).presenceChannel = presenceChannel;
-
   const newStore = vanillaCreate<PusherZustandStore>((set) => {
     return {
       pusherClient: pusherClient,
       channel: channel,
-      presenceChannel,
-      privateChannel,
+      presenceChannel: presenceChannel,
+      userChannel,
       members: new Map(),
     };
   });
@@ -66,7 +72,7 @@ const createPusherStore = (
       members: presenceChannel.members.members,
     }));
 
-    console.log("members???", presenceChannel.members.members);
+    console.log("members", presenceChannel.members.members, pusherClient);
   };
 
   presenceChannel.bind("pusher:subscription_succeeded", updateMembers);
@@ -88,6 +94,7 @@ const { Provider: PusherZustandStoreProvider, useStore: usePusherStore } =
   createContext<StoreApi<PusherZustandStore>>();
 
 import React from "react";
+import UserFacade from "pusher-js/types/src/core/user";
 /**
  * This provider is the thing you mount in the app to "give access to Pusher"
  *
@@ -115,10 +122,11 @@ export const PusherProvider: React.FC<
 export function useSubscribeToEvent<MessageType>(
   eventName: string,
   callback: (data: MessageType) => void,
-  isPrivate?: boolean
+  channelType: "public" | "presence" | "user"
 ) {
   const channel = usePusherStore((state) => state.channel);
-  const privateChannel = usePusherStore((state) => state.privateChannel);
+  const userChannel = usePusherStore((state) => state.userChannel);
+  const presenceChannel = usePusherStore((state) => state.presenceChannel);
 
   const stableCallback = React.useRef(callback);
 
@@ -131,19 +139,30 @@ export function useSubscribeToEvent<MessageType>(
     const reference = (data: MessageType) => {
       stableCallback.current(data);
     };
+    switch (channelType) {
+      case "public":
+        channel.bind(eventName, reference);
+        break;
+      case "user":
+        userChannel.bind(eventName, reference);
+        break;
+      case "presence":
+        presenceChannel.bind(eventName, reference);
 
-    if (isPrivate) {
-      privateChannel.bind(eventName, reference);
-    } else {
-      channel.bind(eventName, reference);
+        break;
+      default:
+        break;
     }
 
     return () => {
       channel.unbind(eventName, reference);
-      privateChannel.unbind(eventName, reference);
+      userChannel.unbind(eventName, reference);
+      presenceChannel.unbind(eventName, reference);
     };
-  }, [channel, eventName]);
+  }, [channel, eventName, presenceChannel]);
 }
 
 export const useCurrentMemberCount = () =>
   usePusherStore((s) => Object.keys(s.members).length);
+
+export const usePresence = () => usePusherStore((s) => s.presenceChannel);
