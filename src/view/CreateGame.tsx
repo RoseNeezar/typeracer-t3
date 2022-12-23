@@ -1,6 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { trpc } from "../utils/trpc";
+import { useRouter } from "next/router";
+import { useGameActions, useGameStore } from "../store/useGame";
 
 type InputValues = {
   nickname: string;
@@ -13,6 +16,8 @@ const schema = z.object({
 type Props = {};
 
 const CreateGame = (props: Props) => {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -21,8 +26,21 @@ const CreateGame = (props: Props) => {
   } = useForm<InputValues>({
     resolver: zodResolver(schema),
   });
+  const { mutateAsync, isLoading } = trpc.typeracer.createGame.useMutation({
+    onSuccess: (data) => {
+      useGameStore.setState({
+        currentPlayer: data.currentPlayer,
+        Game: data.game,
+      });
+
+      if (data.game.id) router.push(`/${data.game.id}`);
+    },
+  });
 
   const onSubmit = async (data: InputValues) => {
+    await mutateAsync({
+      nickname: data.nickname,
+    });
     reset();
   };
 
@@ -72,7 +90,9 @@ const CreateGame = (props: Props) => {
                   </div>
                   <button
                     type="submit"
-                    className={`btn-primary btn flex w-full justify-center px-4 py-2 text-sm`}
+                    className={`btn-primary btn flex w-full justify-center px-4 py-2 text-sm ${
+                      isLoading && "loading"
+                    }`}
                   >
                     Ok
                   </button>
