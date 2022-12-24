@@ -44,18 +44,6 @@ const GameProgressBar = (props: Props) => {
 
   return (
     <div className="flex w-full flex-col py-10">
-      <div className="divider" />
-      <div className="card rounded-box grid h-32 place-items-center bg-base-300">
-        <div className="flex w-full items-center justify-between px-4">
-          <div className="w-24 font-bold">{props.player.nickname}</div>
-          <GameKeyboard
-            isKeyPressed={isKeyPressed(props.player.nickname, data)}
-          />
-          <ProgressBar
-            percentage={calculatePercentage(props.player, props.wordsLength)}
-          />
-        </div>
-      </div>
       {props.players.map((p) => {
         const percentage = calculatePercentage(p, props.wordsLength);
         return (

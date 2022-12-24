@@ -14,7 +14,7 @@ const GameCountdown = (props: Props) => {
     }
   }, [data?.countDown]);
 
-  return Object.keys(data).length > 0 ? (
+  return Object.keys(data).length > 0 && data ? (
     <div className="m-auto">
       <span className="countdown m-auto mt-10 font-mono text-6xl">
         {typeof data.countDown === "number" ? (

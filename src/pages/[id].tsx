@@ -9,15 +9,21 @@ import GameProgressBar from "../components/GameProgressBar";
 import GameScore from "../components/GameScore";
 import GameStartBtn from "../components/GameStartBtn";
 import { Modal } from "../components/Modal";
-import {
-  GameState,
-  useCurrentPlayer,
-  useGame,
-  useGameStore,
-} from "../store/useGame";
 import { PusherProvider, useSubscribeToEvent } from "../utils/pusher";
 import { trpc } from "../utils/trpc";
 import JoinGame from "../view/JoinGame";
+import {
+  useGame,
+  useCurrentPlayer,
+  useKeyEvent,
+  GameState,
+  TimerState,
+  IPlayer,
+  useTimerEvent,
+  KeyInput,
+  useGameActions,
+  useGameDone,
+} from "../store/useGame";
 
 type Props = {};
 
@@ -27,31 +33,84 @@ const GameView: React.FC<{
   nickname: string;
 }> = (props) => {
   const data = useGame();
-
+  const {
+    updateGame,
+    resetTimerEvent,
+    updateTimerEvent,
+    updateKeyEvent,
+    addKeyEvent,
+  } = useGameActions();
+  const doneTyping = useGameDone();
   const cachePlayer = useCurrentPlayer();
-
+  const keyEvent = useKeyEvent();
   const currentPlayer = useMemo(
     () => data.players.find((s) => s.id === cachePlayer?.id),
     [cachePlayer, data]
   );
 
+  const game = useGame();
+
   useSubscribeToEvent(
     "update-game",
     (data: { game: GameState }) => {
-      useGameStore.setState({
-        Game: data.game,
-      });
+      updateGame(data.game);
     },
     "public"
   );
+
+  useSubscribeToEvent(
+    "timer-start",
+    (data: TimerState) => {
+      // if (doneTyping) return;
+
+      const player = game.players.find(
+        (p) => p.id === currentPlayer!.id
+      ) as IPlayer;
+
+      if (player && player?.WPM > -1) {
+        return;
+      }
+
+      if (data.countDown === "0:00") {
+        resetTimerEvent();
+      } else {
+        updateTimerEvent(data);
+      }
+    },
+    "public"
+  );
+
+  useSubscribeToEvent(
+    "game-end",
+    () => {
+      resetTimerEvent();
+    },
+    "user"
+  );
+
   useSubscribeToEvent(
     "client-up-key",
-    (data) => console.log("up-key-===", data),
+    (data: KeyInput) => {
+      let removeIndex = keyEvent.findIndex((t) => t.nickname === data.nickname);
+
+      if (removeIndex > -1) {
+        let tmp = keyEvent;
+
+        tmp.splice(removeIndex, 1);
+        updateKeyEvent(
+          keyEvent.filter(
+            (x) => x.nickname !== data.nickname && x.key !== data.key
+          )
+        );
+      }
+    },
     "presence"
   );
   useSubscribeToEvent(
     "client-down-key",
-    (data) => console.log("down-key-===", data),
+    (data: KeyInput) => {
+      addKeyEvent(data);
+    },
     "presence"
   );
 
@@ -79,6 +138,7 @@ const GameView: React.FC<{
               <>
                 <GameDisplayWords player={currentPlayer!} words={data.words} />
                 <GameInput
+                  playerID={currentPlayer.id}
                   nickname={currentPlayer!.nickname}
                   gameID={data.id}
                   isOpen={data.is_open}
@@ -111,13 +171,13 @@ const GameContainerView: React.FC = (props) => {
   const router = useRouter();
   const [openUserModal, setOpenUserModal] = useState(false);
 
-  const data = useGameStore.getState().Game;
+  const data = useGame();
 
-  const cachePlayer = useGameStore.getState().currentPlayer;
+  const cachePlayer = useCurrentPlayer();
 
   const currentPlayer = useMemo(
     () => data.players.find((s) => s.id === cachePlayer?.id),
-    [cachePlayer, data, useGameStore]
+    [cachePlayer, data]
   );
 
   useEffect(() => {
@@ -169,11 +229,11 @@ const Game = (props: Props) => {
       },
       {
         onSuccess: (data) => {
-          if (data) {
-            useGameStore.setState({
-              Game: data,
-            });
-          }
+          // if (data) {
+          //   useGameStoreActions((s) => {
+          //     s.Game = data;
+          //   });
+          // }
         },
         enabled: !!router.query.id,
       }

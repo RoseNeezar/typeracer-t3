@@ -1,5 +1,6 @@
 import React from "react";
 import { IState, useTimerEvent } from "../store/useGame";
+import { trpc } from "../utils/trpc";
 
 type Props = {
   player: IState["Game"]["players"][0];
@@ -8,12 +9,14 @@ type Props = {
 
 const GameStartBtn = (props: Props) => {
   const data = useTimerEvent();
-  // const { startGame, loadingGame } = useStartGame();
+  const { mutateAsync: startGame, isLoading } =
+    trpc.typeracer.gameStart.useMutation();
+
   const handleStart = async () => {
-    // await startGame({
-    //   playerID: props.player._id,
-    //   gameID: props.gameID,
-    // });
+    await startGame({
+      playerID: props.player.id,
+      gameID: props.gameID,
+    });
   };
 
   return Object.keys(data).length === 0 ? (
