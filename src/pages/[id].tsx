@@ -9,21 +9,19 @@ import GameProgressBar from "../components/GameProgressBar";
 import GameScore from "../components/GameScore";
 import GameStartBtn from "../components/GameStartBtn";
 import { Modal } from "../components/Modal";
+import {
+  GameState,
+  IPlayer,
+  KeyInput,
+  TimerState,
+  useCurrentPlayer,
+  useGame,
+  useGameActions,
+  useKeyEvent,
+} from "../store/useGame";
 import { PusherProvider, useSubscribeToEvent } from "../utils/pusher";
 import { trpc } from "../utils/trpc";
 import JoinGame from "../view/JoinGame";
-import {
-  useGame,
-  useCurrentPlayer,
-  useKeyEvent,
-  GameState,
-  TimerState,
-  IPlayer,
-  useTimerEvent,
-  KeyInput,
-  useGameActions,
-  useGameDone,
-} from "../store/useGame";
 
 type Props = {};
 
@@ -40,7 +38,6 @@ const GameView: React.FC<{
     updateKeyEvent,
     addKeyEvent,
   } = useGameActions();
-  const doneTyping = useGameDone();
   const cachePlayer = useCurrentPlayer();
   const keyEvent = useKeyEvent();
   const currentPlayer = useMemo(
@@ -73,6 +70,7 @@ const GameView: React.FC<{
 
       if (data.countDown === "0:00") {
         resetTimerEvent();
+        sessionStorage.clear();
       } else {
         updateTimerEvent(data);
       }
@@ -84,6 +82,7 @@ const GameView: React.FC<{
     "game-end",
     () => {
       resetTimerEvent();
+      sessionStorage.clear();
     },
     "user"
   );

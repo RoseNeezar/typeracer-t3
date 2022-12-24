@@ -46,6 +46,9 @@ export const gameRouter = router({
             id: player.id,
           },
           data: {
+            current_word_index: 0,
+            WPM: -1,
+            is_party_leader: true,
             game: {
               connect: {
                 id: game.id,
@@ -116,6 +119,9 @@ export const gameRouter = router({
             nickname: input.nickname,
           },
           data: {
+            current_word_index: 0,
+            WPM: -1,
+            is_party_leader: false,
             game_id: game.id,
           },
         });
@@ -216,7 +222,6 @@ export const gameRouter = router({
             .filter((x) => x === -1);
 
           if (gameStatus.length === 0) {
-            console.log("here:========2");
             clearInterval(TimerID.getTimerID() as NodeJS.Timeout);
 
             game = await ctx.prisma.game.update({
@@ -231,12 +236,7 @@ export const gameRouter = router({
               },
             });
           }
-          console.log("here:========3", input.playerID);
 
-          await pusherServerClient.sendToUser(input.playerID, "game-end", {
-            endStatus: true,
-          });
-          await sleep(1000);
           await pusherServerClient.trigger(
             `game-${input.gameID}`,
             "update-game",
@@ -244,6 +244,10 @@ export const gameRouter = router({
               game,
             }
           );
+          await sleep(1000);
+          await pusherServerClient.sendToUser(input.playerID, "game-end", {
+            endStatus: true,
+          });
         }
       }
     }),
