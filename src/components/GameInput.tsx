@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { usePresence } from "../utils/pusher";
+import { trpc } from "../utils/trpc";
 
 type Props = {
+  playerID: string;
   isOpen: boolean;
   isOver: boolean;
   gameID: string;
@@ -12,17 +14,19 @@ const GameInput = (props: Props) => {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const pusher = usePresence();
-
+  const { mutateAsync } = trpc.typeracer.userInput.useMutation();
   const handleInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
 
     let lastChar = value.charAt(value.length - 1);
 
     if (lastChar === " ") {
-      // socket.emit("user-input", {
-      //   userInput: input,
-      //   gameID: props.gameID,
-      // });
+      await mutateAsync({
+        gameID: props.gameID,
+        playerID: props.playerID,
+        userInput: input,
+      });
+
       setInput("");
     } else {
       setInput(e.target.value);
