@@ -33,7 +33,6 @@ export interface IState {
   currentPlayer?: IPlayer;
   KeyEvents: KeyInput[];
   TimerEvents: TimerState | {};
-  done: boolean;
 }
 
 export const useGameStore = create(
@@ -50,7 +49,6 @@ export const useGameStore = create(
         currentPlayer: undefined,
         KeyEvents: [],
         TimerEvents: {},
-        done: false,
       } as IState,
       (set) => ({
         action: {
@@ -78,7 +76,7 @@ export const useGameStore = create(
             })),
           resetTimerEvent: () =>
             set((state) => ({
-              done: true,
+              ...state,
               TimerEvents: {},
             })),
         },
@@ -92,7 +90,6 @@ export const useGameStore = create(
 );
 
 export const useGame = () => useGameStore((state) => state.Game);
-export const useGameDone = () => useGameStore((state) => state.done);
 export const useCurrentPlayer = () =>
   useGameStore((state) => state.currentPlayer);
 export const useKeyEvent = () => useGameStore((state) => state.KeyEvents);
