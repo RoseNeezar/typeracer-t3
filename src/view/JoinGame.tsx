@@ -45,9 +45,11 @@ const JoinGame = ({ gameID, closeModal }: Props) => {
   });
 
   const onSubmit = async (data: InputValues) => {
-    await mutateAsync(data);
-    reset();
-    closeModal && closeModal(false);
+    try {
+      await mutateAsync(data);
+      reset();
+      closeModal && closeModal(false);
+    } catch (error) {}
   };
 
   useEffect(() => {

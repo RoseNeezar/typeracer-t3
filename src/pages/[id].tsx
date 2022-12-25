@@ -198,7 +198,7 @@ const GameContainerView: React.FC = (props) => {
           />
         </PusherProvider>
       ) : (
-        <Modal open={openUserModal} onClose={() => setOpenUserModal(false)}>
+        <Modal open={openUserModal}>
           <JoinGame
             gameID={router.query.id as string}
             closeModal={setOpenUserModal}

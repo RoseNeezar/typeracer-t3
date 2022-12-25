@@ -13,10 +13,12 @@ const GameStartBtn = (props: Props) => {
     trpc.typeracer.gameStart.useMutation();
 
   const handleStart = async () => {
-    await startGame({
-      playerID: props.player.id,
-      gameID: props.gameID,
-    });
+    try {
+      await startGame({
+        playerID: props.player.id,
+        gameID: props.gameID,
+      });
+    } catch (error) {}
   };
 
   return Object.keys(data).length === 0 ? (
