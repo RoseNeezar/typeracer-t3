@@ -21,11 +21,13 @@ const GameInput = (props: Props) => {
     let lastChar = value.charAt(value.length - 1);
 
     if (lastChar === " ") {
-      await mutateAsync({
-        gameID: props.gameID,
-        playerID: props.playerID,
-        userInput: input,
-      });
+      try {
+        await mutateAsync({
+          gameID: props.gameID,
+          playerID: props.playerID,
+          userInput: input,
+        });
+      } catch (error) {}
 
       setInput("");
     } else {

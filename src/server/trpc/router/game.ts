@@ -107,6 +107,24 @@ export const gameRouter = router({
         });
       }
 
+      let otherPlayerInGame = await ctx.prisma.player.findFirst({
+        where: {
+          nickname: input.nickname,
+          game_id: game.id,
+          game: {
+            is_over: false,
+            is_open: true,
+          },
+        },
+      });
+
+      if (otherPlayerInGame) {
+        throw new trpc.TRPCError({
+          code: "CONFLICT",
+          message: "Player name duplicate",
+        });
+      }
+
       let player = await ctx.prisma.player.findFirst({
         where: {
           nickname: input.nickname,

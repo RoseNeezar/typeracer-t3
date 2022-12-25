@@ -71,8 +71,6 @@ const createPusherStore = (
     newStore.setState(() => ({
       members: presenceChannel.members.members,
     }));
-
-    console.log("members", presenceChannel.members.members, pusherClient);
   };
 
   presenceChannel.bind("pusher:subscription_succeeded", updateMembers);

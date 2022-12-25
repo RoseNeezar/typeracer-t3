@@ -7,7 +7,7 @@ export function Modal({
   children,
 }: {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   children: React.ReactNode;
 }) {
   let overlayRef = useRef<HTMLDivElement | null>(null);

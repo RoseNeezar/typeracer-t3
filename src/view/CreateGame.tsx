@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "next/router";
-import { useGameActions, useGameStore } from "../store/useGame";
+import { useGameStore } from "../store/useGame";
+import { toast } from "react-hot-toast";
 
 type InputValues = {
   nickname: string;
@@ -38,11 +39,20 @@ const CreateGame = (props: Props) => {
   });
 
   const onSubmit = async (data: InputValues) => {
-    await mutateAsync({
-      nickname: data.nickname,
-    });
+    try {
+      await mutateAsync({
+        nickname: data.nickname,
+      });
+    } catch (error) {}
+
     reset();
   };
+
+  if (errors.nickname) {
+    toast.error("Enter nicknam", {
+      position: "top-right",
+    });
+  }
 
   return (
     <div className="bg-gray-600 text-left">
