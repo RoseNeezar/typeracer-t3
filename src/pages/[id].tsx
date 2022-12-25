@@ -58,8 +58,6 @@ const GameView: React.FC<{
   useSubscribeToEvent(
     "timer-start",
     (data: TimerState) => {
-      // if (doneTyping) return;
-
       const player = game.players.find(
         (p) => p.id === currentPlayer!.id
       ) as IPlayer;
@@ -227,13 +225,6 @@ const Game = (props: Props) => {
         gameId: router.query.id as string,
       },
       {
-        onSuccess: (data) => {
-          // if (data) {
-          //   useGameStoreActions((s) => {
-          //     s.Game = data;
-          //   });
-          // }
-        },
         enabled: !!router.query.id,
       }
     );
@@ -243,6 +234,10 @@ const Game = (props: Props) => {
   }
 
   if (!checkGame) {
+    return router.push("/");
+  }
+
+  if (checkGame && checkGame.is_over) {
     return router.push("/");
   }
 
