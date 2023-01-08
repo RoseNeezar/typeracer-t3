@@ -17,7 +17,7 @@ services:
     # networks:
     #   - soketi_network
   mongodb1:
-    image: prismagraphql/mongo-single-replica:4.4.3-bionic
+    image: prismagraphql/mongo-single-replica:5.0.3
     hostname: localhost
     container_name: mongodb1
     environment:
