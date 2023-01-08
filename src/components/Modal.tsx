@@ -3,14 +3,14 @@ import React, { useRef } from "react";
 
 export function Modal({
   open,
-  onClose = () => {},
+  onClose = () => null,
   children,
 }: {
   open: boolean;
   onClose?: () => void;
   children: React.ReactNode;
 }) {
-  let overlayRef = useRef<HTMLDivElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <Dialog

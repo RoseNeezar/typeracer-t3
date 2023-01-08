@@ -12,8 +12,7 @@ const ProgressBar: FC<{ percentage: number }> = ({ percentage }) => {
   return (
     <div
       className="radial-progress border-4 border-primary bg-primary text-primary-content"
-      // @ts-ignore
-      style={{ "--value": percentage }}
+      style={{ "--value": percentage } as any}
     >
       {percentage}%
     </div>

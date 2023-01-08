@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
 import { TimerState, useTimerEvent } from "../store/useGame";
 
-type Props = {};
-
-const GameCountdown = (props: Props) => {
+const GameCountdown = () => {
   const data = useTimerEvent() as TimerState;
 
   const time = useMemo(() => {
@@ -18,23 +16,17 @@ const GameCountdown = (props: Props) => {
     <div className="m-auto">
       <span className="countdown m-auto mt-10 font-mono text-6xl">
         {typeof data.countDown === "number" ? (
-          <span
-            className=""
-            // @ts-ignore
-            style={{ "--value": time }}
-          ></span>
+          <span className="" style={{ "--value": time } as any}></span>
         ) : (
           <>
             <span
               className=""
-              // @ts-ignore
-              style={{ "--value": parseInt(time[0]) }}
+              style={{ "--value": parseInt(time[0] as string) } as any}
             ></span>
             m
             <span
               className=""
-              // @ts-ignore
-              style={{ "--value": parseInt(time[1]) }}
+              style={{ "--value": parseInt(time[1] as string) } as any}
             ></span>
             s
           </>

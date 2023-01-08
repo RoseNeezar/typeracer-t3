@@ -7,7 +7,7 @@ import JoinGame from "../view/JoinGame";
 
 function CreateGameWrapper({
   open,
-  onClose = () => {},
+  onClose,
 }: {
   open: boolean;
   onClose: () => void;
@@ -25,7 +25,7 @@ const CreateGameView = dynamic(() => Promise.resolve(CreateGameWrapper), {
 
 function JoinGameWrapper({
   open,
-  onClose = () => {},
+  onClose,
 }: {
   open: boolean;
   onClose: () => void;
