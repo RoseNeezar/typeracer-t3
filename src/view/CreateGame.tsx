@@ -14,9 +14,7 @@ const schema = z.object({
   nickname: z.string().min(2, { message: "Please enter your nickname" }),
 });
 
-type Props = {};
-
-const CreateGame = (props: Props) => {
+const CreateGame = () => {
   const router = useRouter();
 
   const {

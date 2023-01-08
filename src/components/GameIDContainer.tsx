@@ -1,7 +1,5 @@
 import React, { FC } from "react";
 
-type Props = {};
-
 const copyUrlToClipboard = (path: string) => () => {
   navigator.clipboard.writeText(`${window.location.origin}${path}`);
 };

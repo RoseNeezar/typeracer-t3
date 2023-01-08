@@ -89,7 +89,7 @@ export const gameRouter = router({
   joinGame: publicProcedure
     .input(z.object({ nickname: z.string(), gameID: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      let game = (await ctx.prisma.game.findFirst({
+      const game = (await ctx.prisma.game.findFirst({
         where: {
           id: input.gameID,
         },
@@ -107,7 +107,7 @@ export const gameRouter = router({
         });
       }
 
-      let otherPlayerInGame = await ctx.prisma.player.findFirst({
+      const otherPlayerInGame = await ctx.prisma.player.findFirst({
         where: {
           nickname: input.nickname,
           game_id: game.id,
@@ -189,7 +189,7 @@ export const gameRouter = router({
         });
       }
 
-      let player = game?.players.find((x) => x.id === input.playerID);
+      const player = game?.players.find((x) => x.id === input.playerID);
 
       if (!player) {
         throw new trpc.TRPCError({
@@ -198,7 +198,7 @@ export const gameRouter = router({
         });
       }
 
-      let word = game?.words[player!.current_word_index];
+      const word = game?.words[player!.current_word_index];
 
       if (word === input.userInput) {
         player.current_word_index++;
@@ -221,8 +221,8 @@ export const gameRouter = router({
             }
           );
         } else {
-          let endTime = new Date().getTime();
-          let { start_time } = game;
+          const endTime = new Date().getTime();
+          const { start_time } = game;
 
           player.WPM = calculateWPM(endTime, start_time, player);
 
@@ -292,14 +292,14 @@ export const gameRouter = router({
         });
       }
 
-      let player = await ctx.prisma.player.findFirst({
+      const player = await ctx.prisma.player.findFirst({
         where: {
           id: input.playerID,
         },
       });
 
       if (player && player.is_party_leader && !game.is_over) {
-        let timerID = setInterval(async () => {
+        const timerID = setInterval(async () => {
           if (countDown >= 0) {
             // emit countDown to all players within game
             await pusherServerClient.trigger(
@@ -353,7 +353,7 @@ export const gameRouter = router({
       });
 
       let countDown = 6;
-      let timerID = setInterval(async () => {
+      const timerID = setInterval(async () => {
         if (countDown >= 0) {
           await pusherServerClient.trigger(
             `game-${input.gameID}`,

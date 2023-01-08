@@ -16,9 +16,9 @@ const GameInput = (props: Props) => {
   const pusher = usePresence();
   const { mutateAsync } = trpc.typeracer.userInput.useMutation();
   const handleInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
+    const value = e.target.value;
 
-    let lastChar = value.charAt(value.length - 1);
+    const lastChar = value.charAt(value.length - 1);
 
     if (lastChar === " ") {
       try {

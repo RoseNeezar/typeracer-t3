@@ -23,8 +23,6 @@ import { PusherProvider, useSubscribeToEvent } from "../utils/pusher";
 import { trpc } from "../utils/trpc";
 import JoinGame from "../view/JoinGame";
 
-type Props = {};
-
 const GameView: React.FC<{
   gameId: string;
   userId: string;
@@ -88,10 +86,12 @@ const GameView: React.FC<{
   useSubscribeToEvent(
     "client-up-key",
     (data: KeyInput) => {
-      let removeIndex = keyEvent.findIndex((t) => t.nickname === data.nickname);
+      const removeIndex = keyEvent.findIndex(
+        (t) => t.nickname === data.nickname
+      );
 
       if (removeIndex > -1) {
-        let tmp = keyEvent;
+        const tmp = keyEvent;
 
         tmp.splice(removeIndex, 1);
         updateKeyEvent(
@@ -216,7 +216,7 @@ const LazyGameContainerView = dynamic(
   }
 );
 
-const Game = (props: Props) => {
+const Game = () => {
   const router = useRouter();
 
   const { data: checkGame, isLoading: loadingCheckGame } =

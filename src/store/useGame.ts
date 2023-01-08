@@ -32,7 +32,7 @@ export interface IState {
   Game: GameState;
   currentPlayer?: IPlayer;
   KeyEvents: KeyInput[];
-  TimerEvents: TimerState | {};
+  TimerEvents: TimerState | Record<string, unknown>;
 }
 
 export const useGameStore = create(

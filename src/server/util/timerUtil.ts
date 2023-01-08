@@ -8,7 +8,7 @@ export const calculateWPM = (
   startTime: number,
   player: Player
 ) => {
-  let numOfWords = player.current_word_index;
+  const numOfWords = player.current_word_index;
   const timeInSeconds = (endTime - startTime) / 1000;
   const timeInMinutes = timeInSeconds / 60;
   const WPM = Math.floor(numOfWords / timeInMinutes);
@@ -16,8 +16,8 @@ export const calculateWPM = (
 };
 
 export const calculateTime = (time: number) => {
-  let minutes = Math.floor(time / 60);
-  let seconds = time % 60;
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
   return `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
 };
 
@@ -82,7 +82,7 @@ export const startGameClock = async (
       time--;
     } else {
       // get time stamp of when the game ended
-      let endTime = new Date().getTime();
+      const endTime = new Date().getTime();
       // find the game
       let game = await prisma.game.findFirst({
         where: {
@@ -100,7 +100,7 @@ export const startGameClock = async (
         });
       }
       // get the game start time
-      let { start_time } = game!;
+      const { start_time } = game!;
 
       // calculate all players WPM who haven't finished typing out sentence
       game.players.forEach((player, index) => {
@@ -113,7 +113,7 @@ export const startGameClock = async (
       });
 
       // save the game
-      for (let i of game.players) {
+      for (const i of game.players) {
         await prisma.player.updateMany({
           where: {
             WPM: -1,
@@ -145,6 +145,6 @@ export const startGameClock = async (
     }
   };
   startTimer();
-  let timerID = setInterval(() => startTimer(), 1000);
+  const timerID = setInterval(() => startTimer(), 1000);
   TimerID.setTimerID(timerID);
 };
