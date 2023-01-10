@@ -315,6 +315,7 @@ export const gameRouter = router({
             game,
           }
         );
+        startGameClock(game.id, ctx.prisma);
         // const timerID = setInterval(async () => {
         //   if (countDown >= 0) {
         //     // emit countDown to all players within game
