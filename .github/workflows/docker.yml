@@ -37,10 +37,9 @@ jobs:
       - name: docker build client
         uses: docker/build-push-action@v2
         with:
-          context: ./
           push: true
           tags: rneezar2/typeracer-t3
-          file: ./Dockerfile
+          file: Dockerfile
           build-args: |
             DATABASE_URL=${{secrets.DATABASE_URL}}
             PUSHER_APP_ID=${{secrets.PUSHER_APP_ID}}
