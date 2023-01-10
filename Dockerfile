@@ -4,14 +4,15 @@ FROM node:alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install
+RUN yarn install --frozen-lockfile
+
 
 # Rebuild the source code only when needed
 FROM node:alpine AS builder
 WORKDIR /app
 COPY . .
 
-RUN yarn prisma generate
+RUN npx prisma generate
 COPY prisma ./prisma/
 
 ARG DATABASE_URL
