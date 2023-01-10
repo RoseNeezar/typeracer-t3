@@ -35,6 +35,7 @@ jobs:
       - name: docker build client
         uses: docker/build-push-action@v2
         with:
+          context: ./
           push: true
           tags: rneezar2/typeracer-t3
           file: ./Dockerfile
