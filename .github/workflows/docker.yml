@@ -1,0 +1,48 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: docker login
+        env:
+          DOCKER_ID: ${{ secrets.DOCKER_ID }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
+      - name: docker build client
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: rneezar2/typeracer-t3
+          file: ./Dockerfile
+          build-args: |
+            DATABASE_URL=${{secrets.DATABASE_URL}}
+            PUSHER_APP_ID=${{secrets.PUSHER_APP_ID}}
+            NEXT_PUBLIC_PUSHER_APP_KEY=${{secrets.NEXT_PUBLIC_PUSHER_APP_KEY}}
+            PUSHER_APP_SECRET=${{secrets.PUSHER_APP_SECRET}}
+            NEXT_PUBLIC_PUSHER_SERVER_TLS=${{secrets.NEXT_PUBLIC_PUSHER_SERVER_TLS}}
+            NEXT_PUBLIC_PUSHER_SERVER_HOST=${{secrets.NEXT_PUBLIC_PUSHER_SERVER_HOST}}
+            NEXT_PUBLIC_PUSHER_SERVER_PORT=${{secrets.NEXT_PUBLIC_PUSHER_SERVER_PORT}}
