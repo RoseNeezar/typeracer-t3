@@ -277,8 +277,6 @@ export const gameRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      let countDown = 2;
-
       let game = await ctx.prisma.game.findFirst({
         where: {
           id: input.gameID,
