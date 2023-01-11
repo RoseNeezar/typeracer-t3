@@ -277,14 +277,14 @@ export const gameRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      let countDown = 5;
+      const countDown = 5;
 
       await pusherServerClient.trigger(`game-${input.gameID}`, "timer-start", {
         countDown,
         msg: "Starting Game!!!!!",
       });
 
-      let game = await ctx.prisma.game.findFirst({
+      const game = await ctx.prisma.game.findFirst({
         where: {
           id: input.gameID,
         },
