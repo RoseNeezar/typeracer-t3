@@ -278,17 +278,21 @@ export const gameRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const countDown = 5;
-
+      console.log("trigger---0", countDown);
+      console.log("trigger---check", pusherServerClient);
+      console.log("trigger---check-2", pusherServerClient.trigger);
       await pusherServerClient.trigger(`game-${input.gameID}`, "timer-start", {
         countDown,
         msg: "Starting Game!!!!!",
       });
 
+      console.log("trigger---1");
       const game = await ctx.prisma.game.findFirst({
         where: {
           id: input.gameID,
         },
       });
+      console.log("trigger---2", game);
 
       if (!game) {
         throw new trpc.TRPCError({
