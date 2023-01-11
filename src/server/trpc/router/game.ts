@@ -277,22 +277,18 @@ export const gameRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const countDown = 5;
-      console.log("trigger---0", countDown);
-      console.log("trigger---check", pusherServerClient);
-      console.log("trigger---check-2", pusherServerClient.trigger);
+      let countDown = 5;
+
       await pusherServerClient.trigger(`game-${input.gameID}`, "timer-start", {
         countDown,
         msg: "Starting Game!!!!!",
       });
 
-      console.log("trigger---1");
-      const game = await ctx.prisma.game.findFirst({
+      let game = await ctx.prisma.game.findFirst({
         where: {
           id: input.gameID,
         },
       });
-      console.log("trigger---2", game);
 
       if (!game) {
         throw new trpc.TRPCError({
@@ -301,53 +297,53 @@ export const gameRouter = router({
         });
       }
 
-      // const player = await ctx.prisma.player.findFirst({
-      //   where: {
-      //     id: input.playerID,
-      //   },
-      // });
+      const player = await ctx.prisma.player.findFirst({
+        where: {
+          id: input.playerID,
+        },
+      });
 
-      // if (player && player.is_party_leader && !game.is_over) {
-      //   const timerID = setInterval(async () => {
-      //     if (countDown >= 0) {
-      //       // emit countDown to all players within game
-      //       await pusherServerClient.trigger(
-      //         `game-${input.gameID}`,
-      //         "timer-start",
-      //         {
-      //           countDown,
-      //           msg: "Starting Game",
-      //         }
-      //       );
+      if (player && player.is_party_leader && !game.is_over) {
+        const timerID = setInterval(async () => {
+          if (countDown >= 0) {
+            // emit countDown to all players within game
+            await pusherServerClient.trigger(
+              `game-${input.gameID}`,
+              "timer-start",
+              {
+                countDown,
+                msg: "Starting Game",
+              }
+            );
 
-      //       countDown--;
-      //     }
-      //     // start time clock over, now time to start game
-      //     else {
-      //       ctx.prisma;
-      //       game = await ctx.prisma.game.update({
-      //         where: {
-      //           id: input.gameID,
-      //         },
-      //         data: {
-      //           is_open: false,
-      //         },
-      //       });
-      //       // send updated game to all sockets within game
-      //       await pusherServerClient.trigger(
-      //         `game-${input.gameID}`,
-      //         "update-game",
-      //         {
-      //           game,
-      //         }
-      //       );
+            countDown--;
+          }
+          // start time clock over, now time to start game
+          else {
+            ctx.prisma;
+            game = await ctx.prisma.game.update({
+              where: {
+                id: input.gameID,
+              },
+              data: {
+                is_open: false,
+              },
+            });
+            // send updated game to all sockets within game
+            await pusherServerClient.trigger(
+              `game-${input.gameID}`,
+              "update-game",
+              {
+                game,
+              }
+            );
 
-      //       // start game clock
-      //       startGameClock(game.id, ctx.prisma);
-      //       clearInterval(timerID);
-      //     }
-      //   }, 1000);
-      // }
+            // start game clock
+            startGameClock(game.id, ctx.prisma);
+            clearInterval(timerID);
+          }
+        }, 1000);
+      }
     }),
   updateGame: publicProcedure
     .input(
