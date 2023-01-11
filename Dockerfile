@@ -4,6 +4,8 @@ FROM node:alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json yarn.lock ./
+RUN npx prisma generate
+COPY prisma ./
 RUN yarn install --frozen-lockfile
 
 
@@ -12,8 +14,7 @@ FROM node:alpine AS builder
 WORKDIR /app
 COPY . .
 
-RUN npx prisma generate
-COPY prisma ./
+
 
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
@@ -59,7 +60,7 @@ COPY --from=builder /app/package.json ./package.json
 
 USER nextjs
 
-EXPOSE 4040
+EXPOSE 3000
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
