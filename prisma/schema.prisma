@@ -21,12 +21,14 @@ model Player {
 }
 
 model Game {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  words      String[]
-  is_open    Boolean  @default(true)
-  is_over    Boolean  @default(false)
-  start_time Int
-  players    Player[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  words          String[]
+  is_open        Boolean  @default(true)
+  is_over        Boolean  @default(false)
+  start_time     Int
+  countdown_time Int      @default(5)
+  game_time      Int      @default(120)
+  players        Player[]
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }

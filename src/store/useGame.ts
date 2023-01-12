@@ -20,6 +20,8 @@ export type GameState = {
   id: string;
   is_open: boolean;
   is_over: boolean;
+  countdown_time: number;
+  game_time: number;
   players: IPlayer[];
   words: string[];
 };
@@ -45,6 +47,8 @@ export const useGameStore = create(
           is_over: false,
           players: [],
           words: [],
+          countdown_time: 0,
+          game_time: 0,
         },
         currentPlayer: undefined,
         KeyEvents: [],
