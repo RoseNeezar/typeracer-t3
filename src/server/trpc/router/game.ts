@@ -277,13 +277,13 @@ export const gameRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      let countDown = 5;
+
       let game = await ctx.prisma.game.findFirst({
         where: {
           id: input.gameID,
         },
       });
-
-      let countDown = game!.countdown_time;
 
       if (!game) {
         throw new trpc.TRPCError({
@@ -299,58 +299,46 @@ export const gameRouter = router({
       });
 
       if (player && player.is_party_leader && !game.is_over) {
-        // const timerID = setInterval(async () => {
-        if (countDown >= 0) {
-          // emit countDown to all players within game
-          await pusherServerClient.trigger(
-            `game-${input.gameID}`,
-            "timer-start",
-            {
-              countDown,
-              msg: "Starting Game",
-            }
-          );
+        const timerID = setInterval(async () => {
+          if (countDown >= 0) {
+            // emit countDown to all players within game
+            await pusherServerClient.trigger(
+              `game-${input.gameID}`,
+              "timer-start",
+              {
+                countDown,
+                msg: "Starting Game",
+              }
+            );
 
-          countDown--;
+            countDown--;
+          }
+          // start time clock over, now time to start game
+          else {
+            ctx.prisma;
+            game = await ctx.prisma.game.update({
+              where: {
+                id: input.gameID,
+              },
+              data: {
+                is_open: false,
+              },
+            });
+            // send updated game to all sockets within game
+            await pusherServerClient.trigger(
+              `game-${input.gameID}`,
+              "update-game",
+              {
+                game,
+              }
+            );
 
-          game = await ctx.prisma.game.update({
-            where: {
-              id: input.gameID,
-            },
-            data: {
-              countdown_time: countDown,
-            },
-          });
-        }
-        // start time clock over, now time to start game
-        else {
-          game = await ctx.prisma.game.update({
-            where: {
-              id: input.gameID,
-            },
-            data: {
-              is_open: false,
-            },
-          });
-          // send updated game to all sockets within game
-          await pusherServerClient.trigger(
-            `game-${input.gameID}`,
-            "update-game",
-            {
-              game,
-            }
-          );
-
-          // start game clock
-          startGameClock(game.id, ctx.prisma);
-          // clearInterval(timerID);
-          //   }
-          // }, 1000);
-        }
+            // start game clock
+            startGameClock(game.id, ctx.prisma);
+            clearInterval(timerID);
+          }
+        }, 1000);
       }
-      return {
-        game,
-      };
     }),
   updateGame: publicProcedure
     .input(
